@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Five Years of Us — An Anniversary Journey</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        /* ========================================= */
+        /* 1. Reset & Tokens                          */
+        /* ========================================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #05070f;
+            --bg-mid: #0c1020;
+            --ink: #f4efe4;
+            --muted: #97a3bd;
+            --gold: #d9a94e;
+            --gold-soft: #f0cf8a;
+            --line: rgba(217,169,78,0.24);
+            --line-strong: rgba(217,169,78,0.5);
+        }
+
+        html, body { min-height: 100%; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: 'Work Sans', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .serif { font-family: 'Fraunces', Georgia, serif; font-weight: 400; }
+        .tracking-widest {
+            font-family: 'Space Mono', 'Courier New', monospace;
+            letter-spacing: 0.35em; text-transform: uppercase;
+            font-size: 0.7rem; font-weight: 700;
+        }
+
+        /* ========================================= */
+        /* 2. Background: night sky & starfield      */
+        /* ========================================= */
+        #ambient-bg {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none;
+            background:
+                radial-gradient(ellipse at 50% 10%, rgba(30,35,70,0.9) 0%, var(--bg) 62%),
+                radial-gradient(ellipse at 85% 95%, rgba(45,30,20,0.5), transparent 60%);
+        }
+
+        #stars-static { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+        .star-layer { position: absolute; inset: -3%; transition: transform 0.2s ease-out; }
+
+        .star-static {
+            position: absolute; border-radius: 50%; background: #fff;
+            animation: twinkle ease-in-out infinite;
+        }
+
+        .glow {
+            position: absolute; border-radius: 50%; filter: blur(70px);
+            transition: background 1.5s ease-out, transform 0.8s ease-out;
+        }
+
+        .stardust {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .comet {
+            position: fixed; z-index: 2; pointer-events: none;
+            width: 3px; height: 3px; border-radius: 50%; background: #fff;
+            box-shadow: 0 0 6px 1px #fff;
+        }
+        .comet::after {
+            content: ''; position: absolute; top: 1px; right: 2px;
+            width: 90px; height: 1.5px; border-radius: 2px;
+            background: linear-gradient(to left, rgba(255,255,255,0.85), transparent);
+            transform: rotate(180deg); transform-origin: right center;
+        }
+
+        .cursor-dust {
+            position: fixed; z-index: 3; pointer-events: none; border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, var(--gold-soft) 60%, transparent 100%);
+            animation: dustFade 900ms ease-out forwards;
+        }
+        @keyframes dustFade {
+            0% { opacity: 0.85; transform: scale(1) translateY(0); }
+            100% { opacity: 0; transform: scale(0.2) translateY(12px); }
+        }
+
+        .click-twinkle {
+            position: fixed; z-index: 3; pointer-events: none;
+            width: 6px; height: 6px; border-radius: 50%; background: #fff;
+            box-shadow: 0 0 10px 2px rgba(240,207,138,0.8);
+            animation: clickBurst 700ms ease-out forwards;
+        }
+        @keyframes clickBurst {
+            0% { transform: scale(0.4); opacity: 1; }
+            60% { opacity: 0.7; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.15; transform: scale(0.85); }
+            50% { opacity: 0.95; transform: scale(1.15); }
+        }
+
+        @keyframes driftDust {
+            0% { transform: translate(0,0) scale(0.6); opacity: 0; }
+            15% { opacity: 0.9; }
+            85% { opacity: 0.7; }
+            100% { transform: translate(60px,-100vh) scale(1); opacity: 0; }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.55; }
+            50% { transform: scale(1.3); opacity: 1; }
+        }
+
+        @keyframes cometFly {
+            0% { transform: translate(0, 0) rotate(-32deg); opacity: 0; }
+            8% { opacity: 1; }
+            78% { opacity: 1; }
+            100% { transform: translate(-130vw, 85vh) rotate(-32deg); opacity: 0; }
+        }
+
+        /* ========================================= */
+        /* 3. Screens & Transitions                  */
+        /* ========================================= */
+        #app { width: 100%; min-height: 100vh; position: relative; z-index: 10; display: flex; align-items: center; justify-content: center; padding: 2.5rem 0; }
+
+        .screen {
+            position: relative; width: 100%; min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            opacity: 0; pointer-events: none; padding: 2rem;
+            transition: opacity 1s ease, transform 1s ease, filter 1s ease;
+            transform: scale(0.96); filter: blur(10px);
+        }
+
+        .screen.active {
+            opacity: 1; pointer-events: auto; transform: scale(1); filter: blur(0px);
+        }
+
+        /* ========================================= */
+        /* 4. Chart cards & typography                */
+        /* ========================================= */
+        .title-huge {
+            font-size: 3.2rem; line-height: 1.08; margin-bottom: 1.4rem; font-weight: 500;
+            background: linear-gradient(to bottom, var(--ink), var(--gold-soft));
+            -webkit-background-clip: text; color: transparent;
+        }
+        @media (min-width: 768px) { .title-huge { font-size: 4.2rem; } }
+
+        .subtitle { font-size: 1.1rem; color: var(--muted); max-width: 600px; line-height: 1.7; font-weight: 300; }
+
+        .card {
+            background: linear-gradient(180deg, rgba(20,24,42,0.55), rgba(10,12,22,0.55));
+            border: 1px solid var(--line); border-radius: 1.1rem; padding: 3rem 2rem;
+            width: 100%; max-width: 42rem; position: relative;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.65);
+            transition: transform 0.25s ease-out;
+            transform-style: preserve-3d;
+        }
+        .card::before, .card::after {
+            content: ''; position: absolute; width: 22px; height: 22px;
+            border: 1px solid var(--line-strong); opacity: 0.8;
+        }
+        .card::before { top: 10px; left: 10px; border-right: none; border-bottom: none; }
+        .card::after { bottom: 10px; right: 10px; border-left: none; border-top: none; }
+
+        .bg-year {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-family: 'Fraunces', serif; font-size: 26vw; font-weight: 600; color: rgba(217,169,78,0.035); pointer-events: none; z-index: -1;
+        }
+
+        /* ========================================= */
+        /* 5. Buttons & Controls                     */
+        /* ========================================= */
+        .btn {
+            background: rgba(217,169,78,0.08); border: 1px solid var(--line-strong);
+            color: var(--ink); padding: 0.95rem 2.4rem; border-radius: 0.5rem; cursor: pointer;
+            font-family: 'Space Mono', monospace; font-size: 0.85rem; letter-spacing: 0.08em;
+            transition: background 0.3s, border 0.3s, transform 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
+            position: relative;
+        }
+        .btn:hover { background: rgba(217,169,78,0.18); border-color: var(--gold); }
+        .btn:focus-visible, .icon-btn:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 3px; }
+        .btn svg { transition: transform 0.3s; }
+        .btn:hover svg { transform: translateX(4px); }
+
+        .magnetic { transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
+
+        .controls { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 3rem; }
+
+        .icon-btn {
+            width: 3rem; height: 3rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            background: transparent; border: 1px solid var(--line); color: var(--muted); cursor: pointer; transition: all 0.3s;
+        }
+        .icon-btn:hover { background: rgba(217,169,78,0.1); color: var(--gold-soft); border-color: var(--gold); transform: rotate(8deg); }
+
+        .fixed-toolbar {
+            position: fixed; top: 1.25rem; left: 1.25rem; z-index: 25;
+            display: flex; gap: 0.6rem;
+        }
+        .icon-btn-sm { width: 2.35rem; height: 2.35rem; opacity: 0.6; }
+        .icon-btn-sm:hover { opacity: 1; }
+        #ambient-toggle.sound-on {
+            opacity: 1; color: var(--gold-soft); border-color: var(--gold);
+            box-shadow: 0 0 12px rgba(217,169,78,0.35);
+            animation: pulseGlow 3s infinite;
+        }
+
+        .dots { display: flex; align-items: center; gap: 1.1rem; position: relative; padding: 0 0.4rem; }
+        .dots::before {
+            content: ''; position: absolute; left: 0.35rem; right: 0.35rem; top: 50%;
+            height: 1px; background: var(--line); transform: translateY(-50%); z-index: -1;
+        }
+        .dot {
+            width: 0.45rem; height: 0.45rem; background: rgba(255,255,255,0.18);
+            transform: rotate(45deg); transition: all 0.4s ease;
+        }
+        .dot.active { transform: rotate(45deg) scale(1.9); }
+
+        .constellation-star {
+            position: relative; display: flex; flex-direction: column; align-items: center;
+            gap: 0.4rem; cursor: pointer; padding: 0.3rem; border-radius: 0.4rem;
+        }
+        .constellation-dot { width: 9px; height: 9px; border-radius: 50%; transition: transform 0.3s ease; }
+        .constellation-star:hover .constellation-dot,
+        .constellation-star:focus-visible .constellation-dot { transform: scale(1.8); }
+        .constellation-star:focus-visible { outline: 1px solid var(--line-strong); outline-offset: 2px; }
+        .constellation-tip {
+            position: absolute; bottom: 130%; left: 50%; white-space: nowrap;
+            transform: translate(-50%, 4px); background: rgba(8,10,20,0.95);
+            border: 1px solid; border-radius: 0.4rem; padding: 0.4rem 0.7rem;
+            font-size: 0.78rem; font-family: 'Work Sans', sans-serif; color: var(--ink);
+            opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .constellation-star:hover .constellation-tip,
+        .constellation-star:focus-visible .constellation-tip {
+            opacity: 1; transform: translate(-50%, 0);
+        }
+
+        /* ========================================= */
+        /* 6. Lists & Stagger Animations              */
+        /* ========================================= */
+        .milestones { list-style: none; margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; text-align: left; }
+        .milestone {
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+            padding: 1rem 1.5rem; border-radius: 0.6rem; display: flex; gap: 1rem; align-items: flex-start;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+        .milestone:hover { transform: translateX(5px); background: rgba(255,255,255,0.05); }
+        .icon-box {
+            width: 1.75rem; height: 1.75rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: transform 0.3s;
+        }
+        .milestone:hover .icon-box { transform: scale(1.15); }
+
+        .stagger-item {
+            opacity: 0; transform: translateY(20px); filter: blur(5px);
+            transition: opacity 0.8s ease, transform 0.8s ease, filter 0.8s ease;
+        }
+        .active .stagger-item { opacity: 1; transform: translateY(0); filter: blur(0); }
+
+        .letter-line {
+            opacity: 0; transform: translateY(15px); filter: blur(4px);
+            transition: opacity 1s ease, transform 1s ease, filter 1s ease;
+        }
+
+        /* ========================================= */
+        /* 7. Accessibility                          */
+        /* ========================================= */
+        @media (prefers-reduced-motion: reduce) {
+            .star-static, .stardust, .comet, .cursor-dust, .click-twinkle, [style*="pulseGlow"] { animation: none !important; }
+            .screen, .stagger-item, .letter-line, .btn, .icon-btn, .dot { transition: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="ambient-bg">
+        <div id="glow1" class="glow" style="width: 70vh; height: 70vh; top: 12%; left: 22%; background: radial-gradient(circle, rgba(125,211,252,0.14) 0%, transparent 70%);"></div>
+        <div id="glow2" class="glow" style="width: 50vh; height: 50vh; bottom: 8%; right: 18%; background: radial-gradient(circle, rgba(217,169,78,0.1) 0%, transparent 70%);"></div>
+    </div>
+
+    <div id="stars-static"></div>
+    <div id="embers" style="position: fixed; inset: 0; pointer-events: none; z-index: 2; overflow: hidden;"></div>
+
+    <div class="fixed-toolbar">
+        <button class="icon-btn icon-btn-sm" onclick="navigate('intro', 0)" aria-label="Return to the beginning">
+            <div style="width: 15px; height: 15px;"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/><circle cx="12" cy="12" r="1.6" fill="var(--bg)" stroke="none"/></svg></div>
+        </button>
+        <button id="ambient-toggle" class="icon-btn icon-btn-sm" onclick="toggleAmbient()" aria-label="Play a soft ambient tone" aria-pressed="false">
+            <div style="width: 15px; height: 15px;"><svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 12c1.5-4 3-4 4.5 0s3 4 4.5 0 3-4 4.5 0 3 4 4.5 0"/></svg></div>
+        </button>
+    </div>
+
+    <div id="app"></div>
+
+    <script>
+        /* ========================================================== */
+        /* Vanilla JavaScript Logic (Zero External Dependencies)      */
+        /* ========================================================== */
+
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+        // 1. Inline SVGs — a small celestial-cartography icon set
+        const ICONS = {
+            Heart: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M12 21 3.8 13.6C1.4 11.3 1.4 7.6 3.8 5.4c2.2-2 5.6-1.7 7.5.6l.7.8.7-.8c1.9-2.3 5.3-2.6 7.5-.6 2.4 2.2 2.4 5.9 0 8.2L12 21Z"/><path d="M12 8.5 12.9 11 15.4 11.9 12.9 12.8 12 15.3 11.1 12.8 8.6 11.9 11.1 11Z" fill="var(--bg)" stroke="none"/></svg>',
+            Sparkles: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 1.5 13.7 9 21 12 13.7 15 12 22.5 10.3 15 3 12 10.3 9Z"/></svg>',
+            ArrowRight: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15"/><path d="m13 5.5 7 6.5-7 6.5"/><path d="M19 12v0" stroke-width="2.4"/></svg>',
+            ArrowLeft: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m11 5.5-7 6.5 7 6.5"/><path d="M20 12H5"/></svg>',
+            Star: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/><circle cx="12" cy="12" r="1.6" fill="var(--bg)" stroke="none"/></svg>',
+            Flame: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="17.5" cy="6.5" r="2.1" fill="currentColor" stroke="none"/><path d="M15.5 8.5 4 20"/><path d="M16.5 11 8.5 19"/></svg>',
+            Feather: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z"/><path d="M16 8 2 22"/><path d="M17.5 15H9"/><circle cx="3.2" cy="20.8" r="1.1" fill="currentColor" stroke="none"/></svg>',
+            Gem: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13"/><path d="M13 3l3 6-4 13"/><path d="M2 9h20"/></svg>',
+            Sun: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3.6" fill="currentColor" stroke="none"/><path d="M12 2.2v2.4"/><path d="M12 19.4v2.4"/><path d="m4.6 4.6 1.7 1.7"/><path d="m17.7 17.7 1.7 1.7"/><path d="M2.2 12h2.4"/><path d="M19.4 12h2.4"/><path d="m4.6 19.4 1.7-1.7"/><path d="m17.7 6.3 1.7-1.7"/></svg>',
+            Moon: '<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/><path d="M18 3.5v2.2"/><path d="M17 4.6h2.2"/></svg>'
+        };
+
+        // 2. The Data — untouched content
+        const JOURNEY = [
+            { year: "2021", title: "The Spark", subtitle: "Where two worlds quietly collided", Icon: "Sparkles", glow: "#7dd3fc", glow2: "#bae6fd", milestones: ["A first glance that lingered a heartbeat too long.", "Late-night conversations that outlasted the moon.", "The moment we realized this was different."] },
+            { year: "2022", title: "Becoming Us", subtitle: "Two paths braided into one", Icon: "Heart", glow: "#d9a94e", glow2: "#f0cf8a", milestones: ["Our first adventure, hand in hand into the unknown.", "Learning each other's silences and storms.", "The first 'I love you' that changed everything."] },
+            { year: "2023", title: "Deep Roots", subtitle: "Growing steady, growing true", Icon: "Feather", glow: "#c17a4f", glow2: "#e2a374", milestones: ["A home that finally felt like ours.", "Weathering the hard days without letting go.", "Discovering that comfort could feel like fireworks."] },
+            { year: "2024", title: "Golden Horizons", subtitle: "Dreaming louder, together", Icon: "Sun", glow: "#f0cf8a", glow2: "#fff4d6", milestones: ["Chasing sunrises in places we'd only imagined.", "Building plans with your hand always in mine.", "Realizing forever had quietly begun."] },
+            { year: "2025", title: "Unbreakable", subtitle: "A love that learned its own strength", Icon: "Gem", glow: "#d9534f", glow2: "#f2a49f", milestones: ["Choosing each other again, and again, and again.", "Turning ordinary moments into treasured memory.", "Understanding that home was never a place — it was you."] }
+        ];
+
+        const LETTER = [
+            "My love,",
+            "Five years ago, I could never have imagined the universe I would find inside a single person. Yet here we are — five orbits around the sun, and every one of them more luminous because you were beside me.",
+            "We began as a spark, uncertain and electric. We became a fire that neither time nor distance nor the coldest nights could ever put out. You taught me that love is not a destination but a way of traveling — patient, brave, and endlessly kind.",
+            "Thank you for every quiet morning, every reckless dream, every time you held my hand when the road blurred. Thank you for choosing us, over and over, in ways both grand and gloriously small.",
+            "So here is my promise for the years still unwritten: I will keep choosing you. In every season, in every version of this life, I will find my way back to you.",
+            "Happy five years, my forever.",
+            "— Always yours"
+        ];
+
+        // 3. State Management
+        let currentStage = 'intro'; // 'intro', 'year', 'finale'
+        let currentIndex = 0;
+
+        // 4. Rendering Functions
+        function renderIntro() {
+            return `
+            <div class="screen">
+                <div class="stagger-item" style="margin-bottom: 2rem; position: relative; transition-delay: 0.1s;">
+                    <div style="position: absolute; inset: 0; background: radial-gradient(circle, rgba(125,211,252,0.45), transparent 70%); filter: blur(20px); border-radius: 50%; animation: pulseGlow 3s infinite;"></div>
+                    <div style="color: #bae6fd; width: 60px; height: 60px; margin: 0 auto;">${ICONS.Star}</div>
+                </div>
+                <p class="tracking-widest stagger-item" style="color: var(--gold-soft); margin-bottom: 1rem; transition-delay: 0.2s;">2021 — 2026</p>
+                <h1 class="serif title-huge stagger-item" style="transition-delay: 0.3s;">Five Years of Us</h1>
+                <p class="subtitle stagger-item" style="transition-delay: 0.4s;">A cinematic journey through every heartbeat, every season, and every reason I would choose you all over again.</p>
+
+                <div class="stagger-item" style="margin-top: 3rem; transition-delay: 0.5s;">
+                    <button class="btn magnetic" onclick="navigate('year', 0)">
+                        Start Our Journey <span style="width: 18px; height: 18px;">${ICONS.ArrowRight}</span>
+                    </button>
+                </div>
+
+                <div class="stagger-item" style="margin-top: 4rem; display: flex; gap: 0.6rem; align-items: center; color: #6b7691; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; font-family: 'Space Mono', monospace; transition-delay: 0.6s;">
+                    <div style="width: 11px; height: 11px; color: var(--gold);">${ICONS.Star}</div>
+                    An anniversary keepsake
+                    <div style="width: 11px; height: 11px; color: var(--gold);">${ICONS.Star}</div>
+                </div>
+            </div>`;
+        }
+
+        function renderYear(idx) {
+            const entry = JOURNEY[idx];
+
+            const milestonesHTML = entry.milestones.map((m, i) => `
+                <li class="milestone stagger-item" style="transition-delay: ${0.4 + (i * 0.15)}s">
+                    <div class="icon-box" style="color: ${entry.glow}; background: ${entry.glow}22; box-shadow: 0 0 14px ${entry.glow}55;">
+                        <div style="width: 13px; height: 13px;">${ICONS.Flame}</div>
+                    </div>
+                    <span style="color: rgba(255,255,255,0.9); line-height: 1.6; font-weight: 300;">${m}</span>
+                </li>
+            `).join('');
+
+            const dotsHTML = JOURNEY.map((_, i) => `
+                <div class="dot ${i === idx ? 'active' : ''}" style="${i === idx ? `background: ${entry.glow}; box-shadow: 0 0 12px ${entry.glow};` : (i < idx ? `background: ${JOURNEY[i].glow}aa;` : '')}"></div>
+            `).join('');
+
+            return `
+            <div class="screen">
+                <div class="bg-year">${entry.year}</div>
+                <div class="card stagger-item" style="transition-delay: 0.1s;">
+                    <div class="stagger-item" style="margin: 0 auto 1.5rem auto; position: relative; width: 76px; height: 76px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid ${entry.glow}55; background: ${entry.glow}14; transition-delay: 0.2s;">
+                        <div style="position: absolute; inset: 0; background: radial-gradient(circle, ${entry.glow}66, transparent 70%); filter: blur(18px); border-radius: 50%; animation: pulseGlow 3.5s infinite;"></div>
+                        <div style="color: ${entry.glow}; width: 34px; height: 34px; z-index: 2;">${ICONS[entry.Icon]}</div>
+                    </div>
+
+                    <p class="tracking-widest stagger-item" style="color: ${entry.glow}; margin-bottom: 0.5rem; transition-delay: 0.25s;">${entry.year}</p>
+                    <h2 class="serif stagger-item" style="font-size: 3.2rem; margin-bottom: 1rem; line-height: 1.1; color: #fff; transition-delay: 0.3s;">${entry.title}</h2>
+                    <p class="serif stagger-item" style="font-size: 1.2rem; font-style: italic; color: var(--muted); transition-delay: 0.35s;">${entry.subtitle}</p>
+
+                    <ul class="milestones">
+                        ${milestonesHTML}
+                    </ul>
+                </div>
+
+                <div class="controls stagger-item" style="transition-delay: 0.9s;">
+                    <button class="icon-btn magnetic" onclick="navigate('prev')" aria-label="Previous">
+                        <div style="width: 18px; height: 18px;">${ICONS.ArrowLeft}</div>
+                    </button>
+                    <div class="dots" role="img" aria-label="Year ${idx + 1} of ${JOURNEY.length}">${dotsHTML}</div>
+                    <button class="btn magnetic" onclick="navigate('next')" style="border-color: ${entry.glow}55; background: ${entry.glow}15; color: #fff;">
+                        ${idx === JOURNEY.length - 1 ? 'The Final Chapter' : 'Continue'}
+                        <div style="width: 16px; height: 16px;">${ICONS.ArrowRight}</div>
+                    </button>
+                </div>
+            </div>`;
+        }
+
+        function renderFinale() {
+            const letterHTML = LETTER.map((line, i) => {
+                const isFirst = i === 0;
+                const isSignature = line.startsWith("—");
+                let style = "margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: 300; color: rgba(255,255,255,0.9); line-height: 1.85;";
+                if(isFirst) style = "margin-bottom: 1.5rem; font-family: 'Fraunces', serif; font-size: 1.7rem; color: var(--ink);";
+                if(isSignature) style = "margin-top: 2rem; text-align: right; font-family: 'Fraunces', serif; font-size: 1.2rem; font-style: italic; color: var(--gold-soft);";
+
+                return `<p class="letter-line" style="${style}">${line}</p>`;
+            }).join('');
+
+            // Small constellation recap — one star per year, hover or focus to reveal it
+            const constellationHTML = JOURNEY.map((j, i) => `
+                <div class="constellation-star" tabindex="0" aria-label="${j.year} — ${j.title}">
+                    <div class="constellation-tip" style="border-color:${j.glow}77;"><strong style="color:${j.glow};">${j.year}</strong> — ${j.title}</div>
+                    <div class="constellation-dot" style="background:${j.glow}; box-shadow:0 0 10px ${j.glow};"></div>
+                    <span style="font-family:'Space Mono', monospace; font-size:0.65rem; color:#6b7691;">${j.year}</span>
+                </div>
+                ${i < JOURNEY.length - 1 ? `<div style="width:2.2rem; height:1px; background:linear-gradient(to right, ${j.glow}88, ${JOURNEY[i+1].glow}88); margin-bottom:1.1rem;"></div>` : ''}
+            `).join('');
+
+            return `
+            <div class="screen" style="padding: 4rem 2rem;">
+                <div class="stagger-item" style="margin-bottom: 2rem; position: relative; width: 92px; height: 92px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid rgba(240,207,138,0.4); background: rgba(240,207,138,0.08); transition-delay: 0.1s;">
+                    <div style="position: absolute; inset: 0; background: radial-gradient(circle, rgba(240,207,138,0.5), transparent 70%); filter: blur(24px); border-radius: 50%; animation: pulseGlow 4s infinite;"></div>
+                    <div style="color: var(--gold-soft); width: 38px; height: 38px; z-index: 2;">${ICONS.Moon}</div>
+                </div>
+
+                <p class="tracking-widest stagger-item" style="color: var(--gold-soft); margin-bottom: 1rem; transition-delay: 0.2s;">2026 & Forever</p>
+                <h2 class="serif title-huge stagger-item" style="font-size: 2.8rem; margin-bottom: 2rem; transition-delay: 0.3s;">A Letter For My Forever</h2>
+
+                <div class="stagger-item" style="display:flex; align-items:flex-end; margin-bottom: 3rem; transition-delay: 0.4s;">
+                    ${constellationHTML}
+                </div>
+
+                <div class="card stagger-item" style="max-width: 48rem; padding: 4rem 3rem; transition-delay: 0.5s;">
+                    ${letterHTML}
+                </div>
+
+                <div class="letter-line" style="margin-top: 4rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; color: #d9534f;">
+                        <div style="width: 18px; height: 18px; animation: pulseGlow 1.6s infinite;">${ICONS.Heart}</div>
+                        <span class="serif" style="font-size: 1.2rem; font-style: italic; color: #f2a49f;">Happy 5th Anniversary</span>
+                        <div style="width: 18px; height: 18px; animation: pulseGlow 1.6s infinite; animation-delay: 0.8s;">${ICONS.Heart}</div>
+                    </div>
+                    <button class="btn magnetic" onclick="navigate('intro', 0)" style="background: transparent; color: var(--muted); border-color: rgba(255,255,255,0.12);">
+                        <div style="width: 15px; height: 15px;">${ICONS.Sparkles}</div> Relive our journey
+                    </button>
+                </div>
+            </div>`;
+        }
+
+        // 5. Engine Logic
+        const app = document.getElementById('app');
+
+        // Depth layers for the parallax starfield — far/mid/near
+        const STAR_LAYERS = [
+            { depth: 0.35, count: 0.3 }, // distant, barely drifts
+            { depth: 0.7, count: 0.4 },
+            { depth: 1.3, count: 0.3 }  // near, moves the most
+        ];
+
+        function createStaticStars() {
+            const container = document.getElementById('stars-static');
+            const total = window.innerWidth < 640 ? 45 : 90;
+            STAR_LAYERS.forEach(layer => {
+                const layerEl = document.createElement('div');
+                layerEl.className = 'star-layer';
+                layerEl.dataset.depth = layer.depth;
+                const count = Math.round(total * layer.count);
+                for (let i = 0; i < count; i++) {
+                    const s = document.createElement('div');
+                    s.className = 'star-static';
+                    const size = (1 + Math.random() * 1.6) * (0.7 + layer.depth * 0.3);
+                    s.style.width = `${size}px`;
+                    s.style.height = `${size}px`;
+                    s.style.left = `${Math.random() * 100}%`;
+                    s.style.top = `${Math.random() * 100}%`;
+                    s.style.opacity = (0.2 + Math.random() * 0.6).toFixed(2);
+                    if (!prefersReducedMotion) {
+                        s.style.animationDuration = `${2.5 + Math.random() * 4}s`;
+                        s.style.animationDelay = `${Math.random() * 5}s`;
+                    }
+                    layerEl.appendChild(s);
+                }
+                container.appendChild(layerEl);
+            });
+        }
+
+        function spawnComet() {
+            if (prefersReducedMotion) return;
+            const comet = document.createElement('div');
+            comet.className = 'comet';
+            comet.style.top = `${Math.random() * 40}%`;
+            comet.style.right = `${Math.random() * 20}%`;
+            comet.style.animation = `cometFly ${2.5 + Math.random() * 1.5}s ease-in forwards`;
+            document.body.appendChild(comet);
+            comet.addEventListener('animationend', () => comet.remove());
+        }
+
+        function scheduleComet() {
+            if (prefersReducedMotion) return;
+            setTimeout(() => {
+                spawnComet();
+                if (Math.random() < 0.3) setTimeout(spawnComet, 400 + Math.random() * 600);
+                scheduleComet();
+            }, 3500 + Math.random() * 5000);
+        }
+
+        function updateEffects() {
+            let c1 = '#7dd3fc', c2 = '#bae6fd';
+            if (currentStage === 'year') {
+                c1 = JOURNEY[currentIndex].glow;
+                c2 = JOURNEY[currentIndex].glow2;
+            } else if (currentStage === 'finale') {
+                c1 = '#f0cf8a'; c2 = '#d9a94e';
+            }
+
+            document.getElementById('glow1').style.background = `radial-gradient(circle, ${c1}33 0%, transparent 70%)`;
+            document.getElementById('glow2').style.background = `radial-gradient(circle, ${c2}22 0%, transparent 70%)`;
+
+            // Re-create drifting stardust
+            const embersContainer = document.getElementById('embers');
+            embersContainer.innerHTML = '';
+            if (prefersReducedMotion) return;
+            for(let i=0; i<22; i++) {
+                const dust = document.createElement('div');
+                dust.className = 'stardust';
+                const size = 1.5 + Math.random() * 3;
+                dust.style.width = `${size}px`;
+                dust.style.height = `${size}px`;
+                dust.style.left = `${Math.random() * 100}%`;
+                dust.style.bottom = `-10px`;
+                dust.style.background = `radial-gradient(circle, ${c2} 0%, ${c2}66 55%, transparent 100%)`;
+                dust.style.boxShadow = `0 0 6px ${c2}99`;
+                dust.style.animation = `driftDust ${11 + Math.random() * 10}s ${Math.random() * 8}s infinite ease-out`;
+                embersContainer.appendChild(dust);
+            }
+        }
+
+        function triggerFinaleLetter() {
+            const lines = document.querySelectorAll('.letter-line');
+            lines.forEach((line, i) => {
+                setTimeout(() => {
+                    line.style.opacity = '1';
+                    line.style.transform = 'translateY(0)';
+                    line.style.filter = 'blur(0)';
+                }, 1000 + (i * 800)); // Cascading reveal, scales naturally with LETTER length
+            });
+        }
+
+        let isTransitioning = false;
+
+        window.navigate = function(target, idx = null) {
+            if (isTransitioning) return;
+
+            if (target === 'next') {
+                if (currentStage === 'intro') { currentStage = 'year'; currentIndex = 0; }
+                else if (currentStage === 'year') {
+                    if (currentIndex < JOURNEY.length - 1) { currentIndex++; }
+                    else { currentStage = 'finale'; }
+                } else { return; } // already at the finale, nothing further ahead
+            } else if (target === 'prev') {
+                if (currentStage === 'year') {
+                    if (currentIndex > 0) { currentIndex--; }
+                    else { currentStage = 'intro'; }
+                } else if (currentStage === 'finale') {
+                    currentStage = 'year'; currentIndex = JOURNEY.length - 1;
+                } else { return; } // already at the very start
+            } else {
+                currentStage = target;
+                if (idx !== null) currentIndex = idx;
+            }
+
+            const currentScreen = app.querySelector('.screen');
+            if (currentScreen) {
+                isTransitioning = true;
+                currentScreen.style.opacity = '0';
+                currentScreen.style.transform = 'scale(1.05)';
+                currentScreen.style.filter = 'blur(10px)';
+
+                setTimeout(() => { buildDOM(); isTransitioning = false; }, 600);
+            } else {
+                buildDOM();
+            }
+        }
+
+        function buildDOM() {
+            if (currentStage === 'intro') app.innerHTML = renderIntro();
+            else if (currentStage === 'year') app.innerHTML = renderYear(currentIndex);
+            else if (currentStage === 'finale') app.innerHTML = renderFinale();
+
+            updateEffects();
+            window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+
+            // Trigger enter animations
+            setTimeout(() => {
+                const newScreen = app.querySelector('.screen');
+                if(newScreen) newScreen.classList.add('active');
+                if(currentStage === 'finale') triggerFinaleLetter();
+            }, 50);
+        }
+
+        // Keyboard navigation — arrow keys move forward/back through the journey
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') { e.preventDefault(); navigate('next'); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); navigate('prev'); }
+        });
+
+        // 6. Magnetic Mouse Effect, card tilt & stardust trail (skipped on touch devices for performance)
+        let lastDustAt = 0;
+        if (isFinePointer && !prefersReducedMotion) {
+            document.addEventListener('mousemove', (e) => {
+                const x = e.clientX / window.innerWidth;
+                const y = e.clientY / window.innerHeight;
+
+                const g1 = document.getElementById('glow1');
+                const g2 = document.getElementById('glow2');
+                if(g1) g1.style.transform = `translate(${x * 50}px, ${y * 50}px)`;
+                if(g2) g2.style.transform = `translate(${x * -40}px, ${y * -40}px)`;
+
+                document.querySelectorAll('.star-layer').forEach(layer => {
+                    const depth = parseFloat(layer.dataset.depth) || 1;
+                    layer.style.transform = `translate(${(x - 0.5) * -30 * depth}px, ${(y - 0.5) * -30 * depth}px)`;
+                });
+
+                document.querySelectorAll('.magnetic').forEach(btn => {
+                    const rect = btn.getBoundingClientRect();
+                    const btnX = e.clientX - (rect.left + rect.width / 2);
+                    const btnY = e.clientY - (rect.top + rect.height / 2);
+                    const dist = Math.sqrt(btnX*btnX + btnY*btnY);
+
+                    if(dist < 100) btn.style.transform = `translate(${btnX * 0.3}px, ${btnY * 0.3}px) scale(1.05)`;
+                    else btn.style.transform = `translate(0px, 0px) scale(1)`;
+                });
+
+                // Gentle 3D tilt on the active card, as if tipping starlight across parchment
+                const card = document.querySelector('.card');
+                if (card) {
+                    const rect = card.getBoundingClientRect();
+                    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        const px = (e.clientX - rect.left) / rect.width - 0.5;
+                        const py = (e.clientY - rect.top) / rect.height - 0.5;
+                        card.style.transform = `perspective(900px) rotateX(${py * -5}deg) rotateY(${px * 5}deg)`;
+                    } else {
+                        card.style.transform = '';
+                    }
+                }
+
+                // A faint trail of stardust following the cursor
+                const now = performance.now();
+                if (now - lastDustAt > 55) {
+                    lastDustAt = now;
+                    const dust = document.createElement('div');
+                    dust.className = 'cursor-dust';
+                    const size = 2 + Math.random() * 2;
+                    dust.style.width = `${size}px`;
+                    dust.style.height = `${size}px`;
+                    dust.style.left = `${e.clientX + (Math.random() * 6 - 3)}px`;
+                    dust.style.top = `${e.clientY + (Math.random() * 6 - 3)}px`;
+                    document.body.appendChild(dust);
+                    dust.addEventListener('animationend', () => dust.remove());
+                }
+            });
+        }
+
+        // A small twinkle wherever the sky is touched or clicked
+        document.addEventListener('click', (e) => {
+            if (prefersReducedMotion) return;
+            const twinkle = document.createElement('div');
+            twinkle.className = 'click-twinkle';
+            twinkle.style.left = `${e.clientX - 3}px`;
+            twinkle.style.top = `${e.clientY - 3}px`;
+            document.body.appendChild(twinkle);
+            twinkle.addEventListener('animationend', () => twinkle.remove());
+        });
+
+        // 7. A soft, self-generated ambient tone — no audio files needed
+        let audioCtx = null;
+        let ambientNodes = null;
+        let ambientPlaying = false;
+
+        function startAmbient() {
+            audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+
+            const master = audioCtx.createGain();
+            master.gain.value = 0;
+            master.connect(audioCtx.destination);
+            master.gain.linearRampToValueAtTime(0.05, now + 2.5);
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 900;
+            filter.connect(master);
+
+            // A quiet, slow chord — like a distant hum of the night sky
+            const freqs = [110, 164.81, 220, 277.18];
+            const oscs = freqs.map(f => {
+                const o = audioCtx.createOscillator();
+                o.type = 'sine';
+                o.frequency.value = f;
+                const g = audioCtx.createGain();
+                g.gain.value = 0.6 / freqs.length;
+                o.connect(g);
+                g.connect(filter);
+                o.start();
+                return o;
+            });
+
+            // A slow LFO gives the tone a gentle, breathing swell
+            const lfo = audioCtx.createOscillator();
+            lfo.frequency.value = 0.06;
+            const lfoGain = audioCtx.createGain();
+            lfoGain.gain.value = 0.015;
+            lfo.connect(lfoGain);
+            lfoGain.connect(master.gain);
+            lfo.start();
+
+            ambientNodes = { master, oscs, lfo };
+            ambientPlaying = true;
+        }
+
+        function stopAmbient() {
+            if (!ambientNodes) return;
+            const now = audioCtx.currentTime;
+            const { master, oscs, lfo } = ambientNodes;
+            master.gain.cancelScheduledValues(now);
+            master.gain.setValueAtTime(master.gain.value, now);
+            master.gain.linearRampToValueAtTime(0, now + 1);
+            setTimeout(() => {
+                oscs.forEach(o => o.stop());
+                lfo.stop();
+            }, 1100);
+            ambientNodes = null;
+            ambientPlaying = false;
+        }
+
+        window.toggleAmbient = function() {
+            const btn = document.getElementById('ambient-toggle');
+            if (ambientPlaying) {
+                stopAmbient();
+                btn.classList.remove('sound-on');
+                btn.setAttribute('aria-pressed', 'false');
+                btn.setAttribute('aria-label', 'Play a soft ambient tone');
+            } else {
+                startAmbient();
+                btn.classList.add('sound-on');
+                btn.setAttribute('aria-pressed', 'true');
+                btn.setAttribute('aria-label', 'Stop the ambient tone');
+            }
+        }
+
+        // Initialize App
+        createStaticStars();
+        scheduleComet();
+        buildDOM();
+    </script>
+</body>
+</html>
