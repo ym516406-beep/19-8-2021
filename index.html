@@ -357,9 +357,108 @@
             .screen, .stagger-item, .letter-line, .btn, .icon-btn, .dot { transition: none !important; }
             .const-line, .const-star, #progress-fill, .moon-indicator, .secret-card { transition: none !important; }
         }
+
+        /* ========================================= */
+        /* LOCK / COUNTDOWN OVERLAY                   */
+        /* ========================================= */
+        body.locked { overflow: hidden; }
+
+        #lock-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            display: flex; align-items: center; justify-content: center;
+            padding: 2rem;
+            background:
+                radial-gradient(ellipse at 50% 12%, rgba(30,35,70,0.95) 0%, var(--bg) 65%),
+                radial-gradient(ellipse at 85% 95%, rgba(45,30,20,0.55), transparent 60%);
+            animation: lockFadeIn 1s ease;
+        }
+        @keyframes lockFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        #lock-overlay .lock-stars { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+        #lock-overlay .lock-star {
+            position: absolute; border-radius: 50%; background: #fff;
+            animation: twinkle ease-in-out infinite;
+        }
+
+        .lock-card {
+            max-width: 30rem; width: 100%; text-align: center;
+            position: relative; z-index: 1;
+        }
+
+        .lock-eyebrow {
+            color: var(--gold-soft); margin-bottom: 1.4rem; opacity: 0.9;
+        }
+
+        .lock-title {
+            font-size: 2rem; line-height: 1.25; margin-bottom: 1rem; font-weight: 500;
+            background: linear-gradient(to bottom, var(--ink), var(--gold-soft));
+            -webkit-background-clip: text; color: transparent;
+        }
+        @media (min-width: 640px) { .lock-title { font-size: 2.5rem; } }
+
+        .lock-subtitle {
+            font-size: 1rem; color: var(--muted); font-weight: 300; line-height: 1.7;
+            margin-bottom: 2.4rem;
+        }
+
+        .cd-grid {
+            display: flex; align-items: flex-start; justify-content: center;
+            gap: 0.6rem; flex-wrap: wrap;
+        }
+        .cd-unit { display: flex; flex-direction: column; align-items: center; width: 4.6rem; }
+        .cd-num {
+            width: 100%; font-family: 'Space Mono', monospace; font-weight: 700;
+            font-size: 1.9rem; color: var(--gold-soft);
+            background: rgba(217,169,78,0.08); border: 1px solid var(--line);
+            border-radius: 0.7rem; padding: 0.7rem 0.2rem;
+            box-shadow: 0 12px 30px -12px rgba(0,0,0,0.6);
+        }
+        @media (min-width: 640px) { .cd-num { font-size: 2.3rem; } }
+        .cd-label {
+            margin-top: 0.6rem; font-family: 'Space Mono', monospace;
+            letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.6rem; color: var(--muted);
+        }
+        .cd-sep {
+            font-family: 'Space Mono', monospace; font-size: 1.6rem; color: var(--gold);
+            opacity: 0.5; padding-top: 0.55rem;
+        }
+
+        .lock-footnote {
+            margin-top: 2.2rem; font-size: 0.78rem; color: var(--muted); opacity: 0.75;
+        }
     </style>
 </head>
 <body>
+    <div id="lock-overlay">
+        <div class="lock-stars"></div>
+        <div class="lock-card">
+            <div class="tracking-widest lock-eyebrow">Coming Soon</div>
+            <h1 class="serif lock-title">A little longer under the stars</h1>
+            <p class="lock-subtitle">This journey opens on August 19th</p>
+            <div class="cd-grid">
+                <div class="cd-unit">
+                    <div class="cd-num" id="cd-days">00</div>
+                    <div class="cd-label">Days</div>
+                </div>
+                <div class="cd-sep">:</div>
+                <div class="cd-unit">
+                    <div class="cd-num" id="cd-hours">00</div>
+                    <div class="cd-label">Hours</div>
+                </div>
+                <div class="cd-sep">:</div>
+                <div class="cd-unit">
+                    <div class="cd-num" id="cd-mins">00</div>
+                    <div class="cd-label">Minutes</div>
+                </div>
+                <div class="cd-sep">:</div>
+                <div class="cd-unit">
+                    <div class="cd-num" id="cd-secs">00</div>
+                    <div class="cd-label">Seconds</div>
+                </div>
+            </div>
+            <div class="lock-footnote"></div>
+        </div>
+    </div>
 
     <div id="ambient-bg">
         <div id="glow1" class="glow" style="width: 70vh; height: 70vh; top: 12%; left: 22%; background: radial-gradient(circle, rgba(125,211,252,0.14) 0%, transparent 70%);"></div>
@@ -434,12 +533,12 @@
         ];
 
         const LETTER = [
-            "My love,",
-            "Five years ago, I could never have imagined the universe I would find inside a single person. Yet here we are — five orbits around the sun, and every one of them more luminous because you were beside me.",
-            "We began as a spark, uncertain and electric. We became a fire that neither time nor distance nor the coldest nights could ever put out. You taught me that love is not a destination but a way of traveling — patient, brave, and endlessly kind.",
+            "For Haniin,",
+            "Five years ago, I could never imagine having a person like you . Yet here we are — five orbits around the sun, and every one of them more beautiful because you were beside me.",
+            "We became a fire, a fire that neither time nor distance nor the coldest nights could ever put out. You taught me that loving you is the best thing i have ever done — kind, gourgeous, and endlessly beautiful.",
             "Thank you for every quiet morning, every reckless dream, every time you held my hand when the road blurred. Thank you for choosing us, over and over, in ways both grand and gloriously small.",
-            "So here is my promise for the years still unwritten: I will keep choosing you. In every season, in every version of this life, I will find my way back to you.",
-            "Happy five years, my babyyyy.",
+            "So here is my promise for the years still unwritten: I will keep choosing you. In every season, in every version of this life, I will always be there waiting for you.",
+            "Happy five years, my everythingg.",
             "— the one who is always here for you"
         ];
 
@@ -1120,6 +1219,76 @@
         createStaticStars();
         scheduleComet();
         buildDOM();
+    </script>
+
+    <script>
+        // ========================================= //
+        // LOCK / COUNTDOWN OVERLAY LOGIC              //
+        // ========================================= //
+        (function () {
+            // 19 August, 00:00  (Egypt is UTC+3 in August, DST period)
+            var targetTime = new Date('2026-08-19T00:00:00+03:00').getTime();
+
+            var overlay = document.getElementById('lock-overlay');
+            if (!overlay) return;
+
+            document.body.classList.add('locked');
+
+            // sprinkle a few soft twinkling stars behind the card, matching the site's style
+            var starsWrap = overlay.querySelector('.lock-stars');
+            if (starsWrap) {
+                var starCount = 60;
+                for (var i = 0; i < starCount; i++) {
+                    var s = document.createElement('div');
+                    s.className = 'lock-star';
+                    var size = (Math.random() * 1.6 + 0.6).toFixed(2);
+                    s.style.width = size + 'px';
+                    s.style.height = size + 'px';
+                    s.style.top = (Math.random() * 100) + '%';
+                    s.style.left = (Math.random() * 100) + '%';
+                    s.style.opacity = (Math.random() * 0.6 + 0.2).toFixed(2);
+                    s.style.animationDuration = (2 + Math.random() * 3).toFixed(2) + 's';
+                    s.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
+                    starsWrap.appendChild(s);
+                }
+            }
+
+            var elDays = document.getElementById('cd-days');
+            var elHours = document.getElementById('cd-hours');
+            var elMins = document.getElementById('cd-mins');
+            var elSecs = document.getElementById('cd-secs');
+
+            function pad(n) { return String(n).padStart(2, '0'); }
+
+            function tick() {
+                var now = Date.now();
+                var diff = targetTime - now;
+
+                if (diff <= 0) {
+                    clearInterval(timerId);
+                    overlay.style.transition = 'opacity 0.8s ease';
+                    overlay.style.opacity = '0';
+                    setTimeout(function () {
+                        overlay.remove();
+                        document.body.classList.remove('locked');
+                    }, 800);
+                    return;
+                }
+
+                var days = Math.floor(diff / 86400000);
+                var hours = Math.floor((diff % 86400000) / 3600000);
+                var mins = Math.floor((diff % 3600000) / 60000);
+                var secs = Math.floor((diff % 60000) / 1000);
+
+                elDays.textContent = pad(days);
+                elHours.textContent = pad(hours);
+                elMins.textContent = pad(mins);
+                elSecs.textContent = pad(secs);
+            }
+
+            tick();
+            var timerId = setInterval(tick, 1000);
+        })();
     </script>
 </body>
 </html>
