@@ -257,18 +257,22 @@
         /* ========================================= */
         /* 6. Lists & Stagger Animations              */
         /* ========================================= */
-        .milestones { list-style: none; margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; text-align: left; }
-        .milestone {
-            background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
-            padding: 1rem 1.5rem; border-radius: 0.6rem; display: flex; gap: 1rem; align-items: flex-start;
-            transition: transform 0.3s ease, background 0.3s ease;
+        .milestone-box {
+            margin-top: 2.25rem; padding-top: 1.5rem; text-align: left;
+            border-top: 1px solid var(--line);
         }
-        .milestone:hover { transform: translateX(5px); background: rgba(255,255,255,0.05); }
+
+        .milestone-row {
+            display: flex; gap: 1rem; align-items: flex-start; padding: 1.05rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07); transition: background 0.3s ease;
+        }
+        .milestone-row:last-child { border-bottom: none; }
+        .milestone-row:hover { background: rgba(255,255,255,0.03); }
         .icon-box {
             width: 1.75rem; height: 1.75rem; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             flex-shrink: 0; transition: transform 0.3s;
         }
-        .milestone:hover .icon-box { transform: scale(1.15); }
+        .milestone-row:hover .icon-box { transform: scale(1.15); }
 
         .stagger-item {
             opacity: 0; transform: translateY(20px); filter: blur(5px);
@@ -346,52 +350,16 @@
         .secret-close:hover { border-color: var(--gold); color: var(--gold-soft); }
 
         /* ========================================= */
-        /* 8. Opening countdown (5 seconds)           */
-        /* ========================================= */
-        #preloader {
-            position: fixed; inset: 0; z-index: 100;
-            background: radial-gradient(ellipse at 50% 30%, #131a33 0%, var(--bg) 70%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.9s ease, visibility 0.9s ease;
-        }
-        #preloader.hide { opacity: 0; visibility: hidden; pointer-events: none; }
-
-        .preloader-number-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
-        .preloader-glow {
-            position: absolute; width: 160px; height: 160px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(217,169,78,0.4), transparent 70%);
-            filter: blur(28px); animation: pulseGlow 1s ease-in-out infinite; z-index: -1;
-        }
-        .preloader-number {
-            font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-size: 5.5rem; line-height: 1;
-            background: linear-gradient(to bottom, var(--ink), var(--gold-soft));
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-        .preloader-label {
-            font-family: 'Space Mono', monospace; letter-spacing: 0.35em; text-transform: uppercase;
-            font-size: 0.7rem; color: var(--gold-soft); margin-top: 1.75rem; opacity: 0.85;
-        }
-
-        /* ========================================= */
-        /* 9. Accessibility                          */
+        /* 8. Accessibility                          */
         /* ========================================= */
         @media (prefers-reduced-motion: reduce) {
             .star-static, .stardust, .comet, .cursor-dust, .click-twinkle, [style*="pulseGlow"] { animation: none !important; }
             .screen, .stagger-item, .letter-line, .btn, .icon-btn, .dot { transition: none !important; }
             .const-line, .const-star, #progress-fill, .moon-indicator, .secret-card { transition: none !important; }
-            .preloader-glow { animation: none !important; }
         }
     </style>
 </head>
 <body>
-
-    <div id="preloader">
-        <div class="preloader-number-wrap">
-            <div class="preloader-glow"></div>
-            <div class="preloader-number" id="preloader-number">5</div>
-        </div>
-        <p class="preloader-label">five years, unfolding</p>
-    </div>
 
     <div id="ambient-bg">
         <div id="glow1" class="glow" style="width: 70vh; height: 70vh; top: 12%; left: 22%; background: radial-gradient(circle, rgba(125,211,252,0.14) 0%, transparent 70%);"></div>
@@ -426,9 +394,9 @@
                 Five taps, just like five years — the best things are never handed over easily, they're found by someone who looks closely enough to notice them. That's exactly how I found you.
             </p>
             <p class="serif" style="font-size: 1.15rem; font-style: italic; line-height: 1.8; color: var(--ink); margin-top: 1rem;">
-                This whole sky was drawn just for us. Out of every star in it, one of them has always, quietly, been you.
+                This whole sky was drawn just for you. Out of every star in it, one of them has always, quietly, been you.
             </p>
-            <button class="secret-close" onclick="hideSecret()">Close this quietly</button>
+            <button class="secret-close" onclick="hideSecret()">Close this</button>
         </div>
     </div>
 
@@ -458,11 +426,11 @@
 
         // 2. The Data — untouched content
         const JOURNEY = [
-            { year: "2021", title: "The Spark", subtitle: "Where two worlds quietly collided", Icon: "Sparkles", glow: "#7dd3fc", glow2: "#bae6fd", milestones: ["A first glance that lingered a heartbeat too long.", "Late-night conversations that outlasted the moon.", "The moment we realized this was different."] },
-            { year: "2022", title: "Becoming Us", subtitle: "Two paths braided into one", Icon: "Heart", glow: "#d9a94e", glow2: "#f0cf8a", milestones: ["Our first adventure, hand in hand into the unknown.", "Learning each other's silences and storms.", "The first 'I love you' that changed everything."] },
-            { year: "2023", title: "Deep Roots", subtitle: "Growing steady, growing true", Icon: "Feather", glow: "#c17a4f", glow2: "#e2a374", milestones: ["A home that finally felt like ours.", "Weathering the hard days without letting go.", "Discovering that comfort could feel like fireworks."] },
-            { year: "2024", title: "Golden Horizons", subtitle: "Dreaming louder, together", Icon: "Sun", glow: "#f0cf8a", glow2: "#fff4d6", milestones: ["Chasing sunrises in places we'd only imagined.", "Building plans with your hand always in mine.", "Realizing forever had quietly begun."] },
-            { year: "2025", title: "Unbreakable", subtitle: "A love that learned its own strength", Icon: "Gem", glow: "#d9534f", glow2: "#f2a49f", milestones: ["Choosing each other again, and again, and again.", "Turning ordinary moments into treasured memory.", "Understanding that home was never a place — it was you."] }
+            { year: "2021", title: "The Spark", subtitle: "when i found my treasure", Icon: "Sparkles", glow: "#7dd3fc", glow2: "#bae6fd", milestones: ["I saw you for the first time, and I felt it was the first time in my life I truly loved someone — like an angel had just walked past me.", "I couldn't do anything but message you that same day and tell you I loved you, because I saw you as such a beautiful person, impossible to ever find again."] },
+            { year: "2022", title: "Becoming friends", subtitle: "trying to make you love me", Icon: "Heart", glow: "#d9a94e", glow2: "#f0cf8a", milestones: ["We were friends — but not just any two friends. In a very short time, we became incredibly close.", "I loved you far more than I ever had before I truly knew you, because you became the most beautiful friend I've ever had."] },
+            { year: "2023", title: "Deep Roots", subtitle: "having only each other", Icon: "Feather", glow: "#c17a4f", glow2: "#e2a374", milestones: ["We grew even closer — somewhere between being friends and being two people falling in love, talking every single day.", "The longest we ever talked was almost twelve straight hours — it kept me happy for months afterward."] },
+            { year: "2024", title: "Golden Horizons", subtitle: "a special love that will never be repeated", Icon: "Sun", glow: "#f0cf8a", glow2: "#fff4d6", milestones: ["You loved me back, and we became the closest two people to each other — loving one another like no other two people in the world.", "This relationship is the most beautiful thing that's ever happened to me; every second with you felt like the whole world."] },
+            { year: "2025", title: "Unbreakable", subtitle: "you loved me , bs konty btt2ly", Icon: "Gem", glow: "#d9534f", glow2: "#f2a49f", milestones: ["This year, I became certain I can't live without you, and that I'll spend the rest of my life thinking of you.", "You were, and always will be, the most beautiful person I've ever seen. My love for you is something unshakable — it will always be there."] }
         ];
 
         const LETTER = [
@@ -471,8 +439,8 @@
             "We began as a spark, uncertain and electric. We became a fire that neither time nor distance nor the coldest nights could ever put out. You taught me that love is not a destination but a way of traveling — patient, brave, and endlessly kind.",
             "Thank you for every quiet morning, every reckless dream, every time you held my hand when the road blurred. Thank you for choosing us, over and over, in ways both grand and gloriously small.",
             "So here is my promise for the years still unwritten: I will keep choosing you. In every season, in every version of this life, I will find my way back to you.",
-            "Happy five years, my forever.",
-            "— Always yours"
+            "Happy five years, my babyyyy.",
+            "— the one who is always here for you"
         ];
 
         // 3. State Management
@@ -499,7 +467,7 @@
 
                 <div class="stagger-item" style="margin-top: 4rem; display: flex; gap: 0.6rem; align-items: center; color: #6b7691; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.3em; font-family: 'Space Mono', monospace; transition-delay: 0.6s;">
                     <div style="width: 11px; height: 11px; color: var(--gold);">${ICONS.Star}</div>
-                    An anniversary keepsake
+                    made just for haniin
                     <div style="width: 11px; height: 11px; color: var(--gold);">${ICONS.Star}</div>
                 </div>
             </div>`;
@@ -509,12 +477,12 @@
             const entry = JOURNEY[idx];
 
             const milestonesHTML = entry.milestones.map((m, i) => `
-                <li class="milestone stagger-item" style="transition-delay: ${0.4 + (i * 0.15)}s">
+                <div class="milestone-row stagger-item" style="transition-delay: ${0.4 + (i * 0.15)}s">
                     <div class="icon-box" style="color: ${entry.glow}; background: ${entry.glow}22; box-shadow: 0 0 14px ${entry.glow}55;">
                         <div style="width: 13px; height: 13px;">${ICONS.Flame}</div>
                     </div>
-                    <span style="color: rgba(255,255,255,0.9); line-height: 1.6; font-weight: 300;">${m}</span>
-                </li>
+                    <span class="serif" style="color: rgba(255,255,255,0.92); line-height: 1.75; font-weight: 400; font-style: italic; font-size: 1.05rem;">${m}</span>
+                </div>
             `).join('');
 
             const dotsHTML = JOURNEY.map((_, i) => `
@@ -534,9 +502,9 @@
                     <h2 class="serif stagger-item" style="font-size: 3.2rem; margin-bottom: 1rem; line-height: 1.1; color: #fff; transition-delay: 0.3s;">${entry.title}</h2>
                     <p class="serif stagger-item" style="font-size: 1.2rem; font-style: italic; color: var(--muted); transition-delay: 0.35s;">${entry.subtitle}</p>
 
-                    <ul class="milestones">
+                    <div class="milestone-box stagger-item" style="transition-delay: 0.4s;">
                         ${milestonesHTML}
-                    </ul>
+                    </div>
                 </div>
 
                 <div class="controls stagger-item" style="transition-delay: 0.9s;">
@@ -597,7 +565,7 @@
                 <div class="letter-line" style="margin-top: 4rem; display: flex; flex-direction: column; align-items: center; gap: 1.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; color: #d9534f;">
                         <div style="width: 18px; height: 18px; animation: pulseGlow 1.6s infinite;">${ICONS.Heart}</div>
-                        <span class="serif" style="font-size: 1.2rem; font-style: italic; color: #f2a49f;">Happy 5th Anniversary</span>
+                        <span class="serif" style="font-size: 1.2rem; font-style: italic; color: #f2a49f;">the best five years ever</span>
                         <div style="width: 18px; height: 18px; animation: pulseGlow 1.6s infinite; animation-delay: 0.8s;">${ICONS.Heart}</div>
                     </div>
                     <button class="btn magnetic" onclick="navigate('intro', 0)" style="background: transparent; color: var(--muted); border-color: rgba(255,255,255,0.12);">
@@ -905,6 +873,7 @@
         let audioCtx = null;
         let ambientNodes = null;
         let ambientPlaying = false;
+        let twinkleTimeoutId = null;
 
         function startAmbient() {
             audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
@@ -914,11 +883,11 @@
             const master = audioCtx.createGain();
             master.gain.value = 0;
             master.connect(audioCtx.destination);
-            master.gain.linearRampToValueAtTime(0.05, now + 2.5);
+            master.gain.linearRampToValueAtTime(0.2, now + 2.5);
 
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'lowpass';
-            filter.frequency.value = 900;
+            filter.frequency.value = 950;
             filter.connect(master);
 
             // A quiet, slow chord — like a distant hum of the night sky
@@ -928,7 +897,7 @@
                 o.type = 'sine';
                 o.frequency.value = f;
                 const g = audioCtx.createGain();
-                g.gain.value = 0.6 / freqs.length;
+                g.gain.value = 0.55 / freqs.length;
                 o.connect(g);
                 g.connect(filter);
                 o.start();
@@ -939,17 +908,52 @@
             const lfo = audioCtx.createOscillator();
             lfo.frequency.value = 0.06;
             const lfoGain = audioCtx.createGain();
-            lfoGain.gain.value = 0.015;
+            lfoGain.gain.value = 0.05;
             lfo.connect(lfoGain);
             lfoGain.connect(master.gain);
             lfo.start();
 
             ambientNodes = { master, oscs, lfo };
             ambientPlaying = true;
+
+            scheduleTwinkle();
+        }
+
+        // A soft, occasional bell-like note — like a single star catching the light
+        function playTwinkleNote() {
+            if (!ambientPlaying || !ambientNodes) return;
+            const notes = [880, 987.77, 1108.73, 1318.51, 1479.98]; // A major pentatonic, one octave up
+            const freq = notes[Math.floor(Math.random() * notes.length)];
+            const now = audioCtx.currentTime;
+
+            const o = audioCtx.createOscillator();
+            o.type = 'sine';
+            o.frequency.value = freq;
+
+            const g = audioCtx.createGain();
+            g.gain.value = 0;
+            o.connect(g);
+            g.connect(ambientNodes.master);
+
+            g.gain.linearRampToValueAtTime(0.4, now + 0.05);
+            g.gain.exponentialRampToValueAtTime(0.0008, now + 2.4);
+
+            o.start(now);
+            o.stop(now + 2.5);
+        }
+
+        function scheduleTwinkle() {
+            if (!ambientPlaying) return;
+            const delay = 3200 + Math.random() * 4200;
+            twinkleTimeoutId = setTimeout(() => {
+                playTwinkleNote();
+                scheduleTwinkle();
+            }, delay);
         }
 
         function stopAmbient() {
             if (!ambientNodes) return;
+            clearTimeout(twinkleTimeoutId);
             const now = audioCtx.currentTime;
             const { master, oscs, lfo } = ambientNodes;
             master.gain.cancelScheduledValues(now);
@@ -1110,31 +1114,12 @@
             document.getElementById('secret-overlay').classList.remove('show');
         }
 
-        // 10. A five-second countdown while the site quietly opens behind it
-        function initPreloader() {
-            const preloaderEl = document.getElementById('preloader');
-            const numberEl = document.getElementById('preloader-number');
-            if (!preloaderEl || !numberEl) return;
-
-            let count = 5;
-            const tick = setInterval(() => {
-                count--;
-                if (count <= 0) {
-                    clearInterval(tick);
-                    preloaderEl.classList.add('hide');
-                    setTimeout(() => preloaderEl.remove(), 950);
-                    return;
-                }
-                numberEl.textContent = count;
-            }, 1000);
-        }
 
         // Initialize App
         initConstellationBG();
         createStaticStars();
         scheduleComet();
         buildDOM();
-        initPreloader();
     </script>
 </body>
 </html>
